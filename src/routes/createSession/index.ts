@@ -9,6 +9,12 @@ sessionRoutes.post("/session", async (req: Request, res: Response) => {
 
   const createSession = await stripe.checkout.sessions.create(
     {
+      //-------------------------
+      // customer_email: "USEREMAIL@TEST.COM",
+      // currency: "USD" OR "BRL", // REMEMBER: WHEN CREATING THE SUBSCRIPTION ON STRIPE, YOU NEED
+      // TO SET UP TO RECEIVE PAYMENTS IN BOTH CURRENCIES.
+      // customer_email and currency: WILL BE DYNAMIC DATA
+      //-------------------------
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
