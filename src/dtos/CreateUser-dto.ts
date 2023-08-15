@@ -14,8 +14,6 @@ export class CreateUserDto {
   })
   password!: string;
 
-  customerId?: string;
-
   constructor(partial: Partial<CreateUserDto>) {
     Object.assign(this, partial);
   }

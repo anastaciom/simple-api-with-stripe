@@ -28,10 +28,8 @@ export class UserController {
 
       const { id } = await PrismaClient.getInstance().user.create({
         data: {
-          email: userDto.email,
-          name: userDto.name,
+          ...userDto,
           password: await new EncrypterService().encrypt(userDto.password),
-          customer_id: userDto.customerId,
         },
       });
 
