@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String              @id @default(uuid())
+  customer_id       String?             @unique
+  name              String
+  email             String              @unique
+  password          String
+  created_at        DateTime            @default(now()) @db.Timestamptz
+  updated_at        DateTime            @updatedAt @db.Timestamptz
+  UserSubscriptions UserSubscriptions[]
+
+  @@unique([customer_id, id])
+  @@map("users")
+}
+
+model UserSubscriptions {
+  id                String        @id @default(uuid())
+  user_id           String
+  user_customer_id  String
+  subscription_id   String
+  registration_date DateTime      @default(now()) @db.Timestamptz
+  cancellation_date DateTime?     @db.Timestamptz
+  expires_at        DateTime?     @db.Timestamptz
+  is_active         Boolean       @default(true)
+  user              User          @relation(fields: [user_id, user_customer_id], references: [id, customer_id])
+  subscription      Subscriptions @relation(fields: [subscription_id], references: [id])
+
+  @@map("user_subscriptions")
+}
+
+model Subscriptions {
+  id                String              @id @default(uuid())
+  name              String              @unique
+  price             Decimal             @db.Decimal(10, 2)
+  type_of_charge    String
+  is_active         Boolean             @default(true)
+  created_at        DateTime            @default(now()) @db.Timestamptz
+  updated_at        DateTime            @updatedAt @db.Timestamptz
+  UserSubscriptions UserSubscriptions[]
+
+  @@map("subscriptions")
+}

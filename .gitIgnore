@@ -1,2 +1,3 @@
 .env
+postgres.env
 node_modules

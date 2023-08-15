@@ -1,0 +1,16 @@
+version: '2.17.2'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: db-postgres-subscriptions
+    env_file:
+      - postgres.env
+    restart: always
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - pg-data:/var/lib/postgressql/data
+
+volumes:
+  pg-data:
