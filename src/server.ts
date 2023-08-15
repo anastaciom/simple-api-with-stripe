@@ -1,22 +1,43 @@
 import "dotenv/config";
-import express, { raw } from "express";
+import express, { raw, Application } from "express";
 import { routes } from "./routes";
 import cors from "cors";
 import { webhookRoute } from "./routes/webhookStripe";
 
-const app = express();
-const baseUrl = "/api";
-const PORT = process.env.PORT ?? 3030;
+export class Server {
+  private app: Application;
+  private readonly baseUrl: string = "/api";
+  private readonly PORT: string | number = process.env.PORT ?? 3030;
 
-app.use(cors({ origin: process.env.ORIGIN }));
-app.use(
-  `${baseUrl}/webhook-stripe`,
-  raw({ type: "application/json" }), //Placed above express.json due to the different format sent by Stripe
-  webhookRoute
-);
-app.use(express.json());
-app.use(baseUrl, routes);
+  constructor() {
+    this.app = express();
+    this.middlewares();
+    this.routes();
+    this.listen();
+  }
 
-app.listen(PORT, () => {
-  console.log(`Server running in port ${PORT}...`);
-});
+  private middlewares(): void {
+    this.app.use(cors({ origin: process.env.ORIGIN }));
+
+    // Placed above express.json due to the different format sent by Stripe
+    this.app.use(
+      `${this.baseUrl}/webhook-stripe`,
+      raw({ type: "application/json" }),
+      webhookRoute
+    );
+
+    this.app.use(express.json());
+  }
+
+  private routes(): void {
+    this.app.use(this.baseUrl, routes);
+  }
+
+  private listen(): void {
+    this.app.listen(this.PORT, () => {
+      console.log(`Server running in port ${this.PORT}...`);
+    });
+  }
+}
+
+new Server();
