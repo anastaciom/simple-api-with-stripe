@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtService } from "../../services/jwt";
+import "dotenv/config";
 
 export class CheckToken {
   static check(req: Request, res: Response, next: NextFunction) {
@@ -21,7 +22,9 @@ export class CheckToken {
       return res.status(401).json({ error: "Token malformatted." });
     }
 
-    const response = new JwtService().verifyToken(token);
+    const response = new JwtService(
+      process.env.ACCESS_TOKEN_SECRET!
+    ).verifyToken(token);
 
     if (response instanceof Error) {
       return res.status(401).json({ error: response.message });

@@ -10,7 +10,10 @@ export class SubscriptionController {
       });
 
       const addPriceInProduct = response.map((data) => ({
-        ...data,
+        id: data.id,
+        priceId: data.default_price,
+        metadata: data.metadata,
+        description: data.description,
         price: setPrices(data.name),
       }));
 

@@ -1,9 +1,13 @@
 import { sign, verify } from "jsonwebtoken";
 
 export class JwtService {
-  private secret = process.env.JWT_SECRET;
+  private secret: string = "";
 
-  createToken = (data: object, expiresIn: number) => {
+  constructor(secret: string) {
+    this.secret = secret;
+  }
+
+  createToken = (data: object, expiresIn: number | string) => {
     if (!this.secret) {
       return new Error("Error creating token.");
     }

@@ -1,9 +1,10 @@
+import "dotenv/config";
 import { Request, Response } from "express";
 import { validate } from "class-validator";
 import { PrismaClient } from "../services/prismaClient";
-import { JwtService } from "../services/jwt";
 import { EncrypterService } from "../services/encrypter";
 import { CreateUserDto } from "../dtos/CreateUser-dto";
+import { generateAccessOrRefreshToken } from "../utils/generateToken";
 
 export class UserController {
   static async signUp(req: Request, res: Response) {
@@ -23,7 +24,7 @@ export class UserController {
       });
 
       if (existingUser) {
-        return res.status(400).json({ error: "Email already in use." });
+        return res.status(400).json({ error: "Email já em uso." });
       }
 
       const { id } = await PrismaClient.getInstance().user.create({
@@ -33,9 +34,17 @@ export class UserController {
         },
       });
 
-      const token = new JwtService().createToken({ userId: id }, 5000);
+      const accessToken = generateAccessOrRefreshToken("access_token", id);
+      const refreshToken = generateAccessOrRefreshToken("refresh_token", id);
 
-      res.status(201).json({ token });
+      res.cookie("token", refreshToken, {
+        httpOnly: true, // Prevents XXS
+        secure: process.env.NODE_ENV === "production", // HTTPS in production
+        sameSite: "strict", // Prevents CSRF
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      res.status(201).send({ accessToken });
     } catch (_) {
       res.status(500).json({ error: "Internal Server Error." });
     }

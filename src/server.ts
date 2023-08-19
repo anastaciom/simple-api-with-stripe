@@ -3,7 +3,7 @@ import express, { raw, Application } from "express";
 import { routes } from "./routes";
 import cors from "cors";
 import { webhookRoute } from "./routes/webhookStripe";
-
+import cookieParser from "cookie-parser";
 export class Server {
   private app: Application;
   private readonly baseUrl: string = "/api";
@@ -17,7 +17,7 @@ export class Server {
   }
 
   private middlewares(): void {
-    this.app.use(cors({ origin: process.env.ORIGIN }));
+    this.app.use(cors({ origin: process.env.ORIGIN, credentials: true }));
 
     // Placed above express.json due to the different format sent by Stripe
     this.app.use(
@@ -25,7 +25,7 @@ export class Server {
       raw({ type: "application/json" }),
       webhookRoute
     );
-
+    this.app.use(cookieParser());
     this.app.use(express.json());
   }
 
