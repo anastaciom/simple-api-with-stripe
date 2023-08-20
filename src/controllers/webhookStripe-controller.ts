@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 
 import Stripe from "stripe";
 import { stripe } from "../services/stripe";
+import { InternalServerError } from "../errors/InternalServerError";
 
 export class WebhookStripeController {
-  static async handleWebhook(req: Request, res: Response) {
+  static async handle(req: Request, res: Response) {
     const stripeSignature = req.headers["stripe-signature"];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -15,7 +16,7 @@ export class WebhookStripeController {
     }
 
     if (!webhookSecret) {
-      return res.status(500).json({ error: "Internal Server Error." });
+      return res.status(500).json({ error: new InternalServerError().message });
     }
 
     let event: Stripe.Event;
@@ -27,7 +28,9 @@ export class WebhookStripeController {
         webhookSecret
       );
     } catch (err: any) {
-      res.status(400).send({ error: "Webhook Internal Error." });
+      res.status(500).send({
+        error: new InternalServerError("Erro interno no Webhook.").message,
+      });
       return;
     }
     console.log(event.type, "EVENT TYPE");

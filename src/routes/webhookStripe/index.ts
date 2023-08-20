@@ -4,6 +4,6 @@ import { WebhookStripeController } from "../../controllers/webhookStripe-control
 
 const webhookRoute = Router();
 
-webhookRoute.post("/", WebhookStripeController.handleWebhook);
+webhookRoute.post("/", WebhookStripeController.handle);
 
 export { webhookRoute };

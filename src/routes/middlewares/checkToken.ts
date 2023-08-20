@@ -7,19 +7,19 @@ export class CheckToken {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      return res.status(401).json({ error: "Token was not provided." });
+      return res.status(401).json({ error: "Token não foi fornecido." });
     }
 
     const parts = authHeader.split(" ");
 
     if (!(parts.length === 2)) {
-      return res.status(401).json({ error: "Token error." });
+      return res.status(401).json({ error: "Erro no token." });
     }
 
     const [scheme, token] = parts;
 
     if (!/^Bearer$/i.test(scheme)) {
-      return res.status(401).json({ error: "Token malformatted." });
+      return res.status(401).json({ error: "Token mal formatado." });
     }
 
     const response = new JwtService(

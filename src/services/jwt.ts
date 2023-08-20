@@ -1,4 +1,5 @@
 import { sign, verify } from "jsonwebtoken";
+import { InternalServerError } from "../errors/InternalServerError";
 
 export class JwtService {
   private secret: string = "";
@@ -26,7 +27,7 @@ export class JwtService {
       try {
         return verify(token, this.secret);
       } catch (_) {
-        new Error("Internal Server Error.");
+        new InternalServerError().message;
       }
     }
 

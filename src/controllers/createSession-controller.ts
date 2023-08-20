@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Request, Response } from "express";
 import { stripe } from "../services/stripe";
 import { PrismaClient } from "../services/prismaClient";
+import { InternalServerError } from "../errors/InternalServerError";
 
 export class SessionController {
   static async createSession(req: Request, res: Response) {
@@ -33,7 +34,7 @@ export class SessionController {
 
       return res.json(createSession);
     } catch (_) {
-      return res.status(500).json({ error: "Internal Server Error." });
+      return res.status(500).json({ error: new InternalServerError().message });
     }
   }
 }

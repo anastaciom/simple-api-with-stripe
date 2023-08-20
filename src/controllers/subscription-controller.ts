@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { stripe } from "../services/stripe";
 import { setPrices } from "../utils/setPrices";
+import { InternalServerError } from "../errors/InternalServerError";
 
 export class SubscriptionController {
   static async getPlans(req: Request, res: Response) {
@@ -19,7 +20,7 @@ export class SubscriptionController {
 
       return res.json(addPriceInProduct);
     } catch (_) {
-      return res.status(500).json({ error: "Internal Server Error." });
+      return res.status(500).json({ error: new InternalServerError().message });
     }
   }
 }
