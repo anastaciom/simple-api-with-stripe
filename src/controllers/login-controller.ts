@@ -52,7 +52,10 @@ export class LoginController {
         userData.id
       );
 
-      res.cookie("token", refreshToken, cookieConfigData);
+      res.cookie("token", refreshToken, {
+        ...cookieConfigData,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
       res.status(200).send({ accessToken });
     } catch (_) {
       res.status(500).json({ error: new InternalServerError().message });

@@ -39,7 +39,10 @@ export class CreateUserController {
       const accessToken = generateAccessOrRefreshToken("access_token", id);
       const refreshToken = generateAccessOrRefreshToken("refresh_token", id);
 
-      res.cookie("token", refreshToken, cookieConfigData);
+      res.cookie("token", refreshToken, {
+        ...cookieConfigData,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
       res.status(201).send({ accessToken });
     } catch (_) {
       res.status(500).json({ error: new InternalServerError().message });
