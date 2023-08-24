@@ -1,24 +1,30 @@
 import { Request, Response } from "express";
-import { stripe } from "../services/stripe";
-import { setPrices } from "../utils/setPrices";
 import { InternalServerError } from "../errors/InternalServerError";
+import { PrismaClient } from "../services/prismaClient";
+import { PlanDto } from "../dtos/Plan-dto";
 
 export class SubscriptionController {
-  static async getPlans(req: Request, res: Response) {
+  static async getPlans(_: Request, res: Response) {
     try {
-      const { data: response } = await stripe.products.list({
-        apiKey: process.env.SECRET_KEY_STRIPE,
+      const allPlans = await PrismaClient.getInstance().subscriptions.findMany({
+        where: { is_active: true },
       });
 
-      const addPriceInProduct = response.map((data) => ({
-        id: data.id,
-        priceId: data.default_price,
-        metadata: data.metadata,
-        description: data.description,
-        price: setPrices(data.name),
-      }));
+      const data = allPlans.map(
+        (plan) =>
+          new PlanDto({
+            description: plan.description ?? "",
+            id: plan.id,
+            isActive: plan.is_active,
+            name: plan.name,
+            price: Number(plan.price),
+            priceId: plan.price_id_stripe,
+            themeColor: plan.theme_color,
+            typeOfCharge: plan.type_of_charge,
+          }).get
+      );
 
-      return res.json(addPriceInProduct);
+      return res.json(data);
     } catch (_) {
       return res.status(500).json({ error: new InternalServerError().message });
     }

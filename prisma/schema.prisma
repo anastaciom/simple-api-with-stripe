@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TypeOfCharge {
+  MONTHLY
+  ANNUAL
+}
+
 model User {
   id                String              @id @default(uuid())
   customer_id       String?             @unique
@@ -38,10 +43,13 @@ model UserSubscriptions {
 
 model Subscriptions {
   id                String              @id @default(uuid())
+  price_id_stripe   String              @unique
+  description       String?             @db.VarChar(255)
   name              String              @unique
   price             Decimal             @db.Decimal(10, 2)
-  type_of_charge    String
+  type_of_charge    TypeOfCharge
   is_active         Boolean             @default(true)
+  theme_color       String              @db.VarChar(50)
   created_at        DateTime            @default(now()) @db.Timestamptz
   updated_at        DateTime            @updatedAt @db.Timestamptz
   UserSubscriptions UserSubscriptions[]

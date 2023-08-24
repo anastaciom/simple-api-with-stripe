@@ -1,6 +1,5 @@
-import { Request, Response, Router } from "express";
-import { stripe } from "../../services/stripe";
-import { setPrices } from "../../utils/setPrices";
+import { Router } from "express";
+
 import { SubscriptionController } from "../../controllers/subscription-controller";
 import { CheckToken } from "../middlewares/checkToken";
 
