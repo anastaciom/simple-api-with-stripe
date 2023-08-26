@@ -1,0 +1,8 @@
+node_modules
+.github
+.vscode
+LICENSE
+.env.example
+postgres.env.example
+README.md
+todolist.todo

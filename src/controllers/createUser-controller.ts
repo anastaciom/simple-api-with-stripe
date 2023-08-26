@@ -7,6 +7,7 @@ import { CreateUserDto } from "../dtos/CreateUser-dto";
 import { generateAccessOrRefreshToken } from "../utils/generateToken";
 import { cookieConfigData } from "../config/cookie";
 import { InternalServerError } from "../errors/InternalServerError";
+import { stripe } from "../services/stripe";
 
 export class CreateUserController {
   static async handle(req: Request, res: Response) {
@@ -29,11 +30,37 @@ export class CreateUserController {
         return res.status(409).json({ error: "Email já em uso." });
       }
 
-      const { id } = await PrismaClient.getInstance().user.create({
+      const { id, email, name } = await PrismaClient.getInstance().user.create({
         data: {
           ...userDto,
           password: await new EncrypterService().encrypt(userDto.password),
         },
+      });
+
+      //TODO:IN A REAL SYSTEM, YOU MUST SEND A VERIFICATION
+      //EMAIL TO THE USER BEFORE CREATING THE CLIENT IN THE "STRIPE API"
+
+      const existingCustomers = await stripe.customers.list({
+        email,
+        limit: 1,
+      });
+
+      let stripeCustomerId: string;
+
+      if (!!existingCustomers.data.length) {
+        stripeCustomerId = existingCustomers.data[0].id;
+      } else {
+        const { id: customerId } = await stripe.customers.create({
+          email,
+          name,
+        });
+
+        stripeCustomerId = customerId;
+      }
+
+      await PrismaClient.getInstance().user.update({
+        where: { email },
+        data: { stripe_customer_id: stripeCustomerId },
       });
 
       const accessToken = generateAccessOrRefreshToken("access_token", id);

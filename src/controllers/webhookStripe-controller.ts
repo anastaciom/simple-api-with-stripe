@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-
 import Stripe from "stripe";
 import { stripe } from "../services/stripe";
 import { InternalServerError } from "../errors/InternalServerError";
+import { handleWebhookEvent } from "../services/handleWebhookEvent";
 
 export class WebhookStripeController {
   static async handle(req: Request, res: Response) {
@@ -19,33 +19,19 @@ export class WebhookStripeController {
       return res.status(500).json({ error: new InternalServerError().message });
     }
 
-    let event: Stripe.Event;
-
     try {
-      event = stripe.webhooks.constructEvent(
+      const event: Stripe.Event = stripe.webhooks.constructEvent(
         req.body,
         stripeSignature,
         webhookSecret
       );
+
+      await handleWebhookEvent(event);
+      res.send().end();
     } catch (err: any) {
       res.status(500).send({
         error: new InternalServerError("Erro interno no Webhook.").message,
       });
-      return;
     }
-    console.log(event.type, "EVENT TYPE");
-
-    // Handle the event
-    // switch (event.type) {
-    //   case "payment_intent.succeeded":
-    //     const paymentIntentSucceeded = event.data.object;
-    //     // Then define and call a function to handle the event payment_intent.succeeded
-    //     break;
-    //   // ... handle other event types
-    //   default:
-    //     console.log(`Unhandled event type ${event.type}`);
-    // }
-
-    res.send().end();
   }
 }

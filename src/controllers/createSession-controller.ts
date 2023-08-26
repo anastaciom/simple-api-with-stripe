@@ -18,7 +18,8 @@ export class SessionController {
       const createSession = await stripe.checkout.sessions.create(
         {
           //-------------------------
-          customer_email: userData?.email,
+          // customer_email: userData?.email,
+          customer: userData?.stripe_customer_id as string,
           // currency: "USD" OR "BRL", // REMEMBER: WHEN CREATING THE SUBSCRIPTION ON STRIPE, YOU NEED
           // TO SET UP TO RECEIVE PAYMENTS IN BOTH CURRENCIES.
           // customer_email and currency: WILL BE DYNAMIC DATA

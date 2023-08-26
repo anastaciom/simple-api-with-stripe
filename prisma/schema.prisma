@@ -13,30 +13,71 @@ enum TypeOfCharge {
 }
 
 model User {
-  id                String              @id @default(uuid())
-  customer_id       String?             @unique
-  name              String
-  email             String              @unique
-  password          String
-  created_at        DateTime            @default(now()) @db.Timestamptz
-  updated_at        DateTime            @updatedAt @db.Timestamptz
-  UserSubscriptions UserSubscriptions[]
+  id                 String              @id @default(uuid())
+  stripe_customer_id String?             @unique
+  name               String
+  email              String              @unique
+  password           String
+  created_at         DateTime            @default(now()) @db.Timestamptz
+  updated_at         DateTime            @updatedAt @db.Timestamptz
+  UserSubscriptions  UserSubscriptions[]
+  UserRole           UserRoles[]
 
-  @@unique([customer_id, id])
+  @@unique([stripe_customer_id, id])
   @@map("users")
 }
 
+model Roles {
+  id               String             @id @default(uuid())
+  name             String             @unique
+  permissions      Permissions[]      @relation("RoleToPermission")
+  users            UserRoles[]
+  RoleToPermission RoleToPermission[]
+
+  @@map("roles")
+}
+
+model RoleToPermission {
+  role_id       String
+  permission_id String
+  role          Roles       @relation(fields: [role_id], references: [id])
+  permission    Permissions @relation(fields: [permission_id], references: [id])
+
+  @@id([role_id, permission_id])
+  @@map("role_to_permission")
+}
+
+model Permissions {
+  id               String             @id @default(uuid())
+  name             String             @unique
+  description      String             @db.VarChar(255)
+  roles            Roles[]            @relation("RoleToPermission")
+  RoleToPermission RoleToPermission[]
+
+  @@map("permissions")
+}
+
+model UserRoles {
+  user_id String
+  role_id String
+  user    User   @relation(fields: [user_id], references: [id])
+  role    Roles  @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, role_id])
+  @@map("user_roles")
+}
+
 model UserSubscriptions {
-  id                String        @id @default(uuid())
-  user_id           String
-  user_customer_id  String
-  subscription_id   String
-  registration_date DateTime      @default(now()) @db.Timestamptz
-  cancellation_date DateTime?     @db.Timestamptz
-  expires_at        DateTime?     @db.Timestamptz
-  is_active         Boolean       @default(true)
-  user              User          @relation(fields: [user_id, user_customer_id], references: [id, customer_id])
-  subscription      Subscriptions @relation(fields: [subscription_id], references: [id])
+  id                      String        @id @default(uuid())
+  user_id                 String
+  user_stripe_customer_id String
+  subscription_id         String
+  registration_date       DateTime      @default(now()) @db.Timestamptz
+  cancellation_date       DateTime?     @db.Timestamptz
+  expires_at              DateTime?     @db.Timestamptz
+  is_active               Boolean       @default(true)
+  user                    User          @relation(fields: [user_id, user_stripe_customer_id], references: [id, stripe_customer_id])
+  subscription            Subscriptions @relation(fields: [subscription_id], references: [id])
 
   @@map("user_subscriptions")
 }

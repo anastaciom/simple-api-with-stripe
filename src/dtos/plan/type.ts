@@ -1,7 +1,7 @@
 export type TPlanDto = {
   createdAt?: Date;
   description?: string;
-  id: string;
+  id?: string;
   isActive: boolean;
   name: string;
   price: number;
