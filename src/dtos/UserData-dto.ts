@@ -14,7 +14,7 @@ export class UserDataDto {
       email,
       name,
       authorizations,
-      subscription: subscription ?? "Nenhuma inscrição.",
+      subscription: subscription ?? null,
     };
   }
 }
