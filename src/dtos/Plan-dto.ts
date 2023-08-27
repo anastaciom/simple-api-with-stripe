@@ -1,4 +1,4 @@
-import { TPlanDto } from "./plan/type";
+import { TPlanDto } from "./types/plan-types";
 
 export class PlanDto {
   private readonly props: TPlanDto;
