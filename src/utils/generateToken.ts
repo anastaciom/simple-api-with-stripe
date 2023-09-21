@@ -3,20 +3,23 @@ import { JwtService } from "../services/jwt";
 
 const generateAccessOrRefreshToken = (
   type: "refresh_token" | "access_token",
-  userId: string
+  userId: string,
+  tokenVersion: number
 ) => {
   switch (type) {
     case "refresh_token":
-      return new JwtService(process.env.REFRESH_TOKEN_SECRET!).createToken(
-        { userId },
-        "7d"
-      );
+      return JwtService.createToken({
+        data: { userId, tokenVersion },
+        expiresIn: "7d",
+        secret: process.env.REFRESH_TOKEN_SECRET!,
+      });
 
     case "access_token":
-      return new JwtService(process.env.ACCESS_TOKEN_SECRET!).createToken(
-        { userId },
-        "15m"
-      );
+      return JwtService.createToken({
+        data: { userId, tokenVersion },
+        expiresIn: "15m",
+        secret: process.env.ACCESS_TOKEN_SECRET!,
+      });
 
     default:
       return null;

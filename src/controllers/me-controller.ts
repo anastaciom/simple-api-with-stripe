@@ -34,18 +34,20 @@ export class MeController {
       });
 
       if (!user) {
-        return res
-          .status(404)
-          .json({
-            error: new InternalServerError("Usuário não encontrado.").message,
-          });
+        return res.status(404).json({
+          error: new InternalServerError("Usuário não encontrado.").message,
+        });
       }
 
+      const { email, name, UserRole, UserSubscriptions } = user;
+
       const userData = new UserDataDto({
-        email: user.email,
-        name: user.name,
-        authorizations: user.UserRole.map((userRole) => userRole.role.name),
-        subscription: user.UserSubscriptions[0].subscription.name,
+        email,
+        name,
+        authorizations: UserRole.map((userRole) => userRole.role.name),
+        subscription: !!UserSubscriptions.length
+          ? UserSubscriptions[0].subscription.name
+          : null,
       }).get;
 
       res.json(userData);

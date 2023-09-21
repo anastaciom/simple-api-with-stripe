@@ -45,11 +45,13 @@ export class LoginController {
 
       const accessToken = generateAccessOrRefreshToken(
         "access_token",
-        userData.id
+        userData.id,
+        userData.token_version
       );
       const refreshToken = generateAccessOrRefreshToken(
         "refresh_token",
-        userData.id
+        userData.id,
+        userData.token_version
       );
 
       res.cookie("token", refreshToken, {

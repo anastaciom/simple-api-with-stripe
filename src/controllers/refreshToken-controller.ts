@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { PrismaClient } from "../services/prismaClient";
 import "dotenv/config";
 import { generateAccessOrRefreshToken } from "../utils/generateToken";
 import { InternalServerError } from "../errors/InternalServerError";
+import { JwtService } from "../services/jwt";
 
 export class RefreshTokenController {
   static async handle(req: Request, res: Response) {
@@ -19,8 +20,23 @@ export class RefreshTokenController {
         process.env.REFRESH_TOKEN_SECRET!,
         async (err: any, decoded: any) => {
           if (err) {
+            const token = JwtService.decodeToken({
+              token: cookies.token,
+              options: { json: true },
+            }) as JwtPayload | null;
+
+            if (token && err.name === "TokenExpiredError") {
+              await PrismaClient.getInstance().user.update({
+                where: { id: token.userId },
+                data: { token_version: 0 },
+              });
+
+              return res.status(401).json({ error: "Token Invalidado." });
+            }
+
             return res.status(403).json({ error: "Acesso negado." });
           }
+
           const user = await PrismaClient.getInstance().user.findUnique({
             where: { id: decoded.userId },
           });
@@ -29,9 +45,14 @@ export class RefreshTokenController {
             return res.status(401).json({ error: "Não autorizado." });
           }
 
+          if (user.token_version !== decoded.tokenVersion) {
+            return res.status(401).json({ error: "Token inválido." });
+          }
+
           const accessToken = generateAccessOrRefreshToken(
             "access_token",
-            user.id
+            user.id,
+            user.token_version
           );
 
           return res.json({ accessToken });

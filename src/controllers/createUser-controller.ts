@@ -30,12 +30,13 @@ export class CreateUserController {
         return res.status(409).json({ error: "Email já em uso." });
       }
 
-      const { id, email, name } = await PrismaClient.getInstance().user.create({
-        data: {
-          ...userDto,
-          password: await new EncrypterService().encrypt(userDto.password),
-        },
-      });
+      const { id, email, name, token_version } =
+        await PrismaClient.getInstance().user.create({
+          data: {
+            ...userDto,
+            password: await new EncrypterService().encrypt(userDto.password),
+          },
+        });
 
       //TODO:IN A REAL SYSTEM, YOU MUST SEND A VERIFICATION
       //EMAIL TO THE USER BEFORE CREATING THE CLIENT IN THE "STRIPE API"
@@ -63,8 +64,16 @@ export class CreateUserController {
         data: { stripe_customer_id: stripeCustomerId },
       });
 
-      const accessToken = generateAccessOrRefreshToken("access_token", id);
-      const refreshToken = generateAccessOrRefreshToken("refresh_token", id);
+      const accessToken = generateAccessOrRefreshToken(
+        "access_token",
+        id,
+        token_version
+      );
+      const refreshToken = generateAccessOrRefreshToken(
+        "refresh_token",
+        id,
+        token_version
+      );
 
       res.cookie("token", refreshToken, {
         ...cookieConfigData,
