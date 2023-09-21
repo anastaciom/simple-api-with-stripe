@@ -26,10 +26,9 @@ export class RefreshTokenController {
             }) as JwtPayload | null;
 
             if (token && err.name === "TokenExpiredError") {
-              await PrismaClient.getInstance().user.update({
-                where: { id: token.userId },
-                data: { token_version: 0 },
-              });
+              const prisma = PrismaClient.getInstance();
+
+              await prisma.$executeRaw`UPDATE users SET token_version = CASE WHEN token_version = 0 THEN 1 ELSE 0 END WHERE id = ${token.userId}`;
 
               return res.status(401).json({ error: "Token Invalidado." });
             }
