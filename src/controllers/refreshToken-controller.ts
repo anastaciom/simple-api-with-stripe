@@ -10,18 +10,18 @@ export class RefreshTokenController {
   static async handle(req: Request, res: Response) {
     const { cookies } = req;
 
-    if (!cookies.token) {
+    if (!cookies.refresh_token) {
       return res.status(401).json({ error: "Não autorizado." });
     }
 
     try {
       jwt.verify(
-        cookies.token,
+        cookies.refresh_token,
         process.env.REFRESH_TOKEN_SECRET!,
         async (err: any, decoded: any) => {
           if (err) {
             const token = JwtService.decodeToken({
-              token: cookies.token,
+              token: cookies.refresh_token,
               options: { json: true },
             }) as JwtPayload | null;
 

@@ -8,12 +8,12 @@ export class LogoutController {
   static async handle(req: Request, res: Response) {
     const { cookies } = req;
 
-    if (!cookies?.token) {
+    if (!cookies?.refresh_token) {
       return res.sendStatus(204);
     }
 
     const token = JwtService.decodeToken({
-      token: cookies.token,
+      token: cookies.refresh_token,
       options: { json: true },
     }) as JwtPayload | null;
 
