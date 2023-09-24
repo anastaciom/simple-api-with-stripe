@@ -23,7 +23,7 @@ export class LogoutController {
         data: { token_version: { increment: 1 } },
       });
 
-      res.clearCookie("token", cookieConfigData);
+      res.clearCookie("refresh_token", cookieConfigData);
       res.json({ success: "Cookie limpo." });
     }
   }

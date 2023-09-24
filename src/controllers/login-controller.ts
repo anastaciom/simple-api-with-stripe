@@ -54,7 +54,7 @@ export class LoginController {
         userData.token_version
       );
 
-      res.cookie("token", refreshToken, {
+      res.cookie("refresh_token", refreshToken, {
         ...cookieConfigData,
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
