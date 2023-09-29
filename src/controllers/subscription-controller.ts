@@ -12,6 +12,9 @@ export class SubscriptionController {
       const getProduct = await stripe.products.list();
       const allPlans = await PrismaClient.getInstance().subscriptions.findMany({
         where: { is_active: true },
+        orderBy: {
+          price: "asc",
+        },
       });
 
       getProduct.data.map((product) => {
