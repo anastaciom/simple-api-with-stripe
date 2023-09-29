@@ -19,6 +19,7 @@ export class PlanDto {
       themeColor,
       typeOfCharge,
       updatedAt,
+      featuresList,
     } = this.props;
 
     return {
@@ -30,6 +31,7 @@ export class PlanDto {
       price: price.toFixed(2),
       priceId,
       themeColor,
+      featuresList,
       typeOfCharge,
       updatedAt,
     };
