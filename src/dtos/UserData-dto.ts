@@ -8,9 +8,10 @@ export class UserDataDto {
   }
 
   get get() {
-    const { email, name, authorizations, subscription } = this.props;
+    const { email, name, authorizations, subscription, avatarUrl } = this.props;
 
     return {
+      avatarUrl,
       email,
       name,
       authorizations,

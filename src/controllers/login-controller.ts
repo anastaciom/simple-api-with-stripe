@@ -14,9 +14,9 @@ export class LoginController {
     const errors = await validate(userDto);
 
     if (!!errors.length) {
-      const validationErrors = errors
-        .map((error) => Object.values(error.constraints!))
-        .flat();
+      const validationErrors = errors.flatMap((error) =>
+        Object.values(error.constraints!)
+      );
 
       return res.status(400).json({ errors: validationErrors });
     }

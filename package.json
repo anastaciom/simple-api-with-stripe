@@ -11,9 +11,9 @@
     "docker:stop": "docker-compose stop",
     "start:dev": "yarn docker:up &&  yarn docker:logs || yarn docker:start && yarn docker:logs",
     "dev": "cross-env NODE_ENV=dev tsnd --poll --inspect --transpile-only --ignore-watch node_modules --respawn src/server.ts",
-    "prismaGenerate": "npx prisma generate",
-    "prismaStudio": "npx prisma studio",
-    "migrateDev": "npx prisma migrate dev",
+    "prismaGenerate": "npx prisma generate --schema src/infra/db/prisma/schema.prisma",
+    "prismaStudio": "npx prisma studio --schema src/infra/db/prisma/schema.prisma",
+    "migrateDev": "npx prisma migrate dev --schema src/infra/db/prisma/schema.prisma",
     "syncMigrateWithDb": "yarn migrateDev --preview-feature"
   },
   "keywords": [],
@@ -29,6 +29,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
+    "redis": "^4.6.10",
     "stripe": "^12.16.0"
   },
   "devDependencies": {

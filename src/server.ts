@@ -4,6 +4,7 @@ import { routes } from "./routes";
 import cors from "cors";
 import { webhookRoute } from "./routes/webhookStripe";
 import cookieParser from "cookie-parser";
+import { Redis } from "./infra/db/redis/setup";
 export class Server {
   private app: Application;
   private readonly baseUrl: string = "/api";
@@ -11,9 +12,16 @@ export class Server {
 
   constructor() {
     this.app = express();
+    this.startRedisDb();
     this.middlewares();
     this.routes();
     this.listen();
+  }
+
+  private async startRedisDb() {
+    const redis = Redis.getInstance();
+    redis.initialize(process.env.REDIS_URL);
+    await redis.connect();
   }
 
   private middlewares(): void {

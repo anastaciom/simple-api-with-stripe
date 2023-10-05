@@ -15,6 +15,7 @@ enum TypeOfCharge {
 model User {
   id                 String              @id @default(uuid())
   stripe_customer_id String?             @unique
+  avatar_url         String?
   name               String
   email              String              @unique
   password           String

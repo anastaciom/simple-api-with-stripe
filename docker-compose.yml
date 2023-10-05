@@ -1,6 +1,16 @@
 version: '2.17.2'
 
 services:
+  redis:
+    image: redis:latest
+    container_name: db-redis-cache-subscriptions
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redisdata:/data
+
   db:
     image: postgres:latest
     container_name: db-postgres-subscriptions
@@ -13,4 +23,5 @@ services:
       - pg-data:/var/lib/postgressql/data
 
 volumes:
+  redisdata:
   pg-data:
