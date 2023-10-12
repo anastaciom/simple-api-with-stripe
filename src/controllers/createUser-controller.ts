@@ -12,6 +12,12 @@ export class CreateUserController {
   static async handle(req: Request, res: Response) {
     const userDto = new CreateUserDto(req.body);
     const errors = await validate(userDto);
+    const {
+      email: emailDto,
+      password: passwordDto,
+      avatarUrl: avatarUrlDto,
+      name: nameDto,
+    } = userDto;
 
     if (!!errors.length) {
       const validationErrors = errors.flatMap((error) =>
@@ -23,7 +29,7 @@ export class CreateUserController {
 
     try {
       const existingUser = await PrismaClient.getInstance().user.findUnique({
-        where: { email: userDto.email },
+        where: { email: emailDto },
       });
 
       if (existingUser) {
@@ -33,8 +39,10 @@ export class CreateUserController {
       const { id, email, name, token_version } =
         await PrismaClient.getInstance().user.create({
           data: {
-            ...userDto,
-            password: await new EncrypterService().encrypt(userDto.password),
+            email: emailDto,
+            name: nameDto,
+            avatar_url: avatarUrlDto,
+            password: await new EncrypterService().encrypt(passwordDto),
           },
         });
 

@@ -1,6 +1,8 @@
 import { IsEmail, IsNotEmpty, Length } from "class-validator";
 
 export class CreateUserDto {
+  @IsNotEmpty({ message: 'Campo "avatarUrl" é obrigatório.' })
+  avatarUrl!: string;
   @IsNotEmpty({ message: 'Campo "name" é obrigatório.' })
   name!: string;
 
