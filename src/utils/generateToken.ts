@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { JwtService } from "../services/jwt";
 
 const generateAccessOrRefreshToken = (

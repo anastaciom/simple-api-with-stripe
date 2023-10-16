@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Request, Response } from "express";
 import { stripe } from "../services/stripe";
 import { PrismaClient } from "../services/prismaClient";

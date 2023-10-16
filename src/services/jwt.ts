@@ -37,7 +37,13 @@ export class JwtService {
       try {
         return verify(token, secret);
       } catch (err: any) {
-        const errors = ["jwt malformed", "invalid signature"];
+        const errors = [
+          "jwt malformed",
+          "invalid signature",
+          "Unexpected",
+          "invalid algorithm",
+          "invalid token",
+        ];
 
         if (errors.some((el) => err.message.includes(el))) {
           return new Error("NO_REFRESH_TOKEN.");

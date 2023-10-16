@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Router } from "express";
 import { WebhookStripeController } from "../../controllers/webhookStripe-controller";
 

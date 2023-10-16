@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Router } from "express";
 import { SessionController } from "../../controllers/createSession-controller";
 import { CheckToken } from "../middlewares/checkToken";

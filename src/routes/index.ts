@@ -4,6 +4,7 @@ import { login } from "./login";
 import { logout } from "./logout";
 import { me } from "./me";
 import { refreshToken } from "./refreshToken";
+import { searchPhotos } from "./searchPhotos";
 import { subscriptionRoutes } from "./subscriptions";
 
 const routes = [
@@ -14,6 +15,7 @@ const routes = [
   login,
   logout,
   me,
+  searchPhotos,
 ];
 
 export { routes };

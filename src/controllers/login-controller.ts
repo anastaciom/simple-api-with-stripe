@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Request, Response } from "express";
 import { validate } from "class-validator";
 import { PrismaClient } from "../services/prismaClient";

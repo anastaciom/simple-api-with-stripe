@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtService } from "../../services/jwt";
-import "dotenv/config";
 import { PrismaClient } from "../../services/prismaClient";
 import { JwtPayload } from "jsonwebtoken";
 
