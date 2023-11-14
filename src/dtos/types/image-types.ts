@@ -5,4 +5,6 @@ export type TImageDto = {
   imageType: "photo" | "illustration" | "vector";
   imageUrl: string;
   views: string;
+  heigth: number;
+  width: number;
 };

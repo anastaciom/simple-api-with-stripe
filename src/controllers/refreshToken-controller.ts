@@ -4,6 +4,7 @@ import { PrismaClient } from "../services/prismaClient";
 import { generateAccessOrRefreshToken } from "../utils/generateToken";
 import { InternalServerError } from "../errors/InternalServerError";
 import { JwtService } from "../services/jwt";
+import { RefreshTokenFlags } from "../errors/EnumsRefreshToken";
 
 export class RefreshTokenController {
   static async handle(req: Request, res: Response) {
@@ -28,7 +29,10 @@ export class RefreshTokenController {
             ];
 
             if (errors.some((el) => err.message.includes(el))) {
-              return res.status(401).json({ error: "NO_REFRESH_TOKEN." });
+              return res.status(401).json({
+                error: "Refresh Token inválido.",
+                flag: RefreshTokenFlags.NO_REFRESH_TOKEN,
+              });
             } else if (err.message === "jwt expired") {
               const prisma = PrismaClient.getInstance();
               const token = JwtService.decodeToken({
@@ -55,7 +59,10 @@ export class RefreshTokenController {
           }
 
           if (user.token_version !== decoded.tokenVersion) {
-            return res.status(401).json({ error: "Token inválido." });
+            return res.status(401).json({
+              error: "Token inválido.",
+              flag: RefreshTokenFlags.NO_REFRESH_TOKEN,
+            });
           }
 
           const accessToken = generateAccessOrRefreshToken(

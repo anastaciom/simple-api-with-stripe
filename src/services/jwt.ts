@@ -1,5 +1,6 @@
 import { sign, verify, decode } from "jsonwebtoken";
 import { InternalServerError } from "../errors/InternalServerError";
+import { RefreshTokenFlags } from "../errors/EnumsRefreshToken";
 
 export class JwtService {
   private constructor() {}
@@ -46,14 +47,39 @@ export class JwtService {
         ];
 
         if (errors.some((el) => err.message.includes(el))) {
-          return new Error("NO_REFRESH_TOKEN.");
+          return new Error(
+            JSON.stringify({
+              status: 401,
+              error: "Token inválido.",
+              flag: RefreshTokenFlags.NO_REFRESH_TOKEN,
+            })
+          );
+        } else if (err.message === "jwt expired") {
+          return new Error(
+            JSON.stringify({
+              status: 401,
+              error: "Token Expirado.",
+            })
+          );
         }
 
-        return new Error("Erro ao verificar o token.");
+        return new Error(
+          JSON.stringify({
+            status: 401,
+            error: "Erro ao verificar o token.",
+            flag: RefreshTokenFlags.NO_REFRESH_TOKEN,
+          })
+        );
       }
     }
 
-    new InternalServerError().message;
+    new Error(
+      JSON.stringify({
+        status: 500,
+        error: new InternalServerError().message,
+        flag: RefreshTokenFlags.NO_REFRESH_TOKEN,
+      })
+    );
   };
 
   static decodeToken = ({
