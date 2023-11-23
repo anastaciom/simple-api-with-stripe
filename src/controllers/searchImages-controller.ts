@@ -44,7 +44,7 @@ export class SearchImagesController {
         .join("&");
 
       const { data } = await axios.get(
-        `https://pixabay.com/api/?key=${process.env.API_KEY_PIXABAY}&${query}&image_type=photo&min_height=640&orientation=vertical&safesearch=true`
+        `https://pixabay.com/api/?key=${process.env.API_KEY_PIXABAY}&${query}&min_height=640&orientation=vertical&safesearch=true`
       );
 
       const images = data.hits.map(
